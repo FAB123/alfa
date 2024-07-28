@@ -210,7 +210,8 @@ class ItemController extends Controller
                                 'issued_token' => $issued_token,
                                 'items' => $items,
                                 'total' =>  $total,
-                                'qr_code' => $qr_code
+                                'qr_code' => $qr_code,
+                                'transaction_date' => $order->created_at
                             ],
                             'status' => true
                         ], 200);
