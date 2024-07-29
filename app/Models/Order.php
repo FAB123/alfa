@@ -16,4 +16,11 @@ class Order extends Model
     {
         return $this->hasMany(OrderedItem::class, 'order_id', 'order_id');
     }
+
+    public function getTransactionTimeAttribute()
+    {
+        return $this->created_at->format('d-m-Y h:i:A');
+    }
+
+    protected $appends = ['transaction_time'];
 }
