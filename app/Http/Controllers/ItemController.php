@@ -211,7 +211,7 @@ class ItemController extends Controller
                                 'items' => $items,
                                 'total' =>  $total,
                                 'qr_code' => $qr_code,
-                                'transaction_date' => $order->created_at
+                                'transaction_date' => $order->transaction_time
                             ],
                             'status' => true
                         ], 200);
