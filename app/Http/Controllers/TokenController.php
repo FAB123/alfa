@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecallCounter;
 use App\Events\UpdateCounter;
 use App\Models\Token;
 use App\Models\User;
@@ -66,6 +67,73 @@ class TokenController extends Controller
                 'status' => false,
                 'message' => 'An error occurred'
             ], 500);
+        }
+    }
+
+    public function update_token_by_count(Request $request)
+    {
+        try {
+            $user = auth()->user();
+            $counter = decrypt($request->input('counter'));
+            $token_number = $request->input('token');
+
+            $token = Token::where('id', $counter)->first();
+
+            if (!$token) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Counter not found'
+                ], 404);
+            } else {
+                if ($token_number > 0 && $token_number < $token->max_count) {
+                    $token->count = $token_number;
+                    $token->save();
+                } else {
+                    return response()->json([
+                        'status' => false,
+                        'message' => "Token should be between 0 to $token->max_count"
+                    ], 200);
+                }
+            }
+
+            $message = Token::select('title', 'count', 'id', 'issued_count', 'kiosk_mode', 'max_count')
+                ->where('user_id', $user->id)
+                ->get();
+
+            try {
+                broadcast(new UpdateCounter($message->makeVisible('id')->toArray(), base64_encode($user->shop_id)));
+            } catch (\Throwable $th) {
+                info('sending token error');
+            }
+
+            return response()->json([
+                'data' => $message,
+                'status' => true,
+            ], 200);
+        } catch (\Throwable $th) {
+            info($th->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => 'An error occurred'
+            ], 200);
+        }
+    }
+
+    public function recall_token_display(Request $request)
+    {
+        try {
+            $user = auth()->user();
+            $counter = decrypt($request->input('counter_id'));
+            broadcast(new RecallCounter($counter, base64_encode($user->shop_id)));
+            return response()->json([
+                'status' => true,
+                'counter' => $counter
+            ], 200);
+        } catch (\Throwable $th) {
+            info($th->getMessage());
+            return response()->json([
+                'status' => false,
+            ], 200);
         }
     }
 

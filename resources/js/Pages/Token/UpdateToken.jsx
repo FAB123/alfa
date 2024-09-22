@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Counter from "./Counter";
-import { usePage } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import { getData, postData } from "../../apis/apiCalls";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
@@ -64,6 +64,11 @@ function UpdateToken() {
         setCurrentCounter((prev) => (action === "next" ? prev + 1 : prev - 1));
     };
 
+    const getLastData = () => {
+        router.reload({ only: ['user'] })
+
+    };
+
     return (
         <Stack>
             <TopBar />
@@ -80,6 +85,7 @@ function UpdateToken() {
                         decrement={decrement}
                         updateData={updateData}
                         resetCounter={resetCounter}
+                        getLastData={getLastData}
                         count={counters[currentCouter].count}
                         lastIssued={counters[currentCouter].issued_count}
                         maxCount={counters[currentCouter].max_count}

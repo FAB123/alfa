@@ -24,9 +24,13 @@ Route::group(['prefix' => 'v2'], function () {
         Route::controller(TokenController::class)->group(function () {
             Route::post("update_token_display", 'updateTokenCounter');
             Route::post("decrement_token_display", 'decrement_token_display');
+            Route::post('update_token_by_count', 'update_token_by_count');
             Route::get("update_data", 'updateTokenData');
             Route::post("reset_token", 'resetTokenCounter');
             Route::post("reset_issue_token", 'resetIssueTokenCounter');
+            Route::post("recall_token_display", 'recall_token_display');
+
+            
         });
 
 
@@ -34,7 +38,7 @@ Route::group(['prefix' => 'v2'], function () {
             Route::group(['prefix' => 'orders'], function () {
                 Route::post("save-order", 'save_order');
                 Route::get('get-order-list/{mode}/{dir}', 'getOrderList');
-                Route::post('update-order-item','update_order_item');
+                Route::post('update-order-item', 'update_order_item');
             });
         });
     });

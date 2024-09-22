@@ -23,6 +23,9 @@ Route::middleware('auth')->group(function () {
             Route::post("decrement_token_display", 'decrement_token_display');
             Route::post('reset_token', 'resetTokenCounter')->name('reset_token');
             Route::get('update_data', 'updateTokenData')->name('update_data');
+            Route::post("recall_token_display", 'recall_token_display');
+            Route::post('update_token_by_count', 'update_token_by_count');
+
         });
     });
 

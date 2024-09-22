@@ -75,7 +75,7 @@ class ApiController extends Controller
     {
         try {
             $user = auth()->user();
-            $counter = Token::select('id', 'issued_count', 'max_count', 'title', 'kiosk_mode')
+            $counter = Token::select('id', 'count','issued_count', 'max_count', 'title', 'kiosk_mode')
                 ->where('user_id', $user->id)
                 ->get();
 
@@ -188,7 +188,8 @@ class ApiController extends Controller
                 'data' => [
                     'counter' => $counters->makeVisible('id'),
                     'token' => $token->makeVisible('id'),
-                ], 'status' => true,
+                ],
+                'status' => true,
 
             ], 200);
         } catch (\Throwable $th) {
@@ -197,6 +198,8 @@ class ApiController extends Controller
             ], 200);
         }
     }
+
+
 
     public function getLicenceData()
     {
@@ -210,7 +213,8 @@ class ApiController extends Controller
                 'data' => [
                     'message' => Carbon::now()->diffForHumans($user->expire_date, true) . $expired_text,
                     'expired' => $expired,
-                ], 'status' => true,
+                ],
+                'status' => true,
 
             ], 200);
         } catch (\Throwable $th) {

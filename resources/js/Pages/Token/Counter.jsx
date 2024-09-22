@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "@fontsource/orbitron/800.css";
 import {
     Card,
@@ -13,8 +13,13 @@ import {
 } from "@mui/material";
 import RotateLeftIcon from "@mui/icons-material/RotateLeft";
 import SyncAltRoundedIcon from "@mui/icons-material/SyncAltRounded";
+import EditCalendarIcon from "@mui/icons-material/EditCalendar";
+import CampaignIcon from "@mui/icons-material/Campaign";
 import { styled } from "@mui/system";
+import { postData } from "../../apis/apiCalls";
+
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ManualToken from "./ManualToken";
 
 const CustomButton = styled(Fab)({
     width: 100,
@@ -34,6 +39,7 @@ function Counter({
     counter_id,
     resetCounter,
     kioskMode,
+    getLastData,
     lastIssued,
     updateData,
     maxCount,
@@ -43,6 +49,19 @@ function Counter({
             alert("Maximum token reached, it will reset on next update.");
         }
     }, [count]);
+
+    const [doUpdateToken, setDoUpdateToken] = useState(false);
+
+    const recallCounter = () => {
+        postData("token/recall_token_display", { counter_id: counter_id }).then(
+            (response) => console.log(response)
+        );
+    };
+
+    const handleClose = () => {
+        getLastData();
+        setDoUpdateToken(false);
+    };
 
     return (
         // <Paper
@@ -123,12 +142,32 @@ function Counter({
                     color: "red",
                 }}
                 action={
-                    <IconButton onClick={() => resetCounter(counter_id)}>
-                        <RotateLeftIcon color="error" />
-                    </IconButton>
+                    // <IconButton onClick={() => resetCounter(counter_id)}>
+                    //     <RotateLeftIcon color="error" />
+                    // </IconButton>
+
+                    <>
+                        <IconButton onClick={recallCounter}>
+                            <CampaignIcon color="warning" />
+                        </IconButton>
+                        <IconButton
+                            onClick={() => setDoUpdateToken(counter_id)}
+                        >
+                            <EditCalendarIcon color="success" />
+                        </IconButton>
+                        <IconButton onClick={() => resetCounter(counter_id)}>
+                            <RotateLeftIcon color="error" />
+                        </IconButton>
+                    </>
                 }
             />
             <Divider />
+
+            <ManualToken
+                open={doUpdateToken}
+                handleClose={handleClose}
+                url={"token/update_token_by_count"}
+            />
 
             <CardContent>
                 <Stack direction={"column"} alignItems={"center"} spacing={1}>
@@ -191,7 +230,11 @@ function Counter({
                             >
                                 {lastIssued}
                             </Typography>
-                            <IconButton size="small" onClick={updateData} aria-label="sync">
+                            <IconButton
+                                size="small"
+                                onClick={updateData}
+                                aria-label="sync"
+                            >
                                 <SyncAltRoundedIcon
                                     fontSize="small"
                                     color="success"
