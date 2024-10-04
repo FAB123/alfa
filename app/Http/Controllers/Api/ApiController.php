@@ -75,13 +75,13 @@ class ApiController extends Controller
     {
         try {
             $user = auth()->user();
-            $counter = Token::select('id', 'count','issued_count', 'max_count', 'title', 'kiosk_mode')
+            $counter = Token::select('id', 'count', 'issued_count', 'max_count', 'title', 'kiosk_mode')
                 ->where('user_id', $user->id)
                 ->get();
 
             return response()->json([
                 'status' => true,
-                'counter' => $counter
+                'counter' => $counter->makeVisible('id'),
             ], 200);
         } catch (\Throwable $th) {
             info($th->getMessage());
